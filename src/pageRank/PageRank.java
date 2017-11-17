@@ -82,7 +82,7 @@ public class PageRank {
 		double total = 0.0;
 		
 		for (Entry<Integer, Double> myEntry : myV) {
-			total+= Math.abs(myEntry.getKey() - vOld.get(myEntry.getKey()));
+			total+= Math.abs(v.get(myEntry.getKey()) - vOld.get(myEntry.getKey()));
 		}
 		
 		return total;
