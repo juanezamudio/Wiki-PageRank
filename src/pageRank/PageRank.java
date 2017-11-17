@@ -15,7 +15,7 @@ import java.io.*;
 public class PageRank {
 	
 	// Constants
-	public static final double EPSILON = 0.30;
+	public static final double EPSILON = 0.05;
 	public static final int N = 1791489;
 	
 	// Variables
@@ -139,7 +139,7 @@ public class PageRank {
 		
 		pq.addAll(v.entrySet());
 			try {
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("Wiki-PageRank-Result_Epsilon-0.30.txt"));
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("Wiki-PageRank-Result_Epsilon-0.05.txt"));
 				while (!pq.isEmpty()) {
 					Entry<Integer, Double> entryVal = pq.poll();
 					double val = entryVal.getValue();
