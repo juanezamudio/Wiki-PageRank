@@ -51,17 +51,18 @@ public class PageRank {
 				}
 				
 				if (vertexMapT.containsKey(value)) {
-					edgeList.add(key);
-					vertexMapT.put(value, edgeList);
+					List<Integer> el = vertexMapT.get(value);
+					el.add(key);
+					vertexMapT.put(value, el);
 				} else {
 					edgeList = new ArrayList<Integer>();
 					edgeList.add(key);
 					vertexMapT.put(value, edgeList);
 				}
 				
-				if (!v.containsKey(value)) {
-					v.put(value, 1.0/N);
-					vOld.put(value, 0.0);
+				if (!v.containsKey(key)) {
+					v.put(key, 1.0/N);
+					vOld.put(key, 0.0);
 				}
 			}
 			
@@ -77,11 +78,17 @@ public class PageRank {
 		
 	}
 	
+	/**
+	 * 
+	 * @param v
+	 * @param vOld
+	 * @return
+	 */
 	public double subtractMap (Map<Integer, Double> v, Map<Integer, Double> vOld) {
-		Set<Entry<Integer, Double>> myV = v.entrySet();
+		
 		double total = 0.0;
 		
-		for (Entry<Integer, Double> myEntry : myV) {
+		for (Entry<Integer, Double> myEntry : v.entrySet()) {
 			total+= Math.abs(v.get(myEntry.getKey()) - vOld.get(myEntry.getKey()));
 		}
 		
@@ -89,11 +96,20 @@ public class PageRank {
 		
 	}
 	
-	public void pageRank (Map<Integer, List<Integer>> map, Map<Integer, Integer> totalDegree,
+	/**
+	 * 
+	 * @param map
+	 * @param totalDegree
+	 * @param v
+	 * @param vOld
+	 */
+	public void pageRank (Map<Integer, List<Integer>> map, 
+						  Map<Integer, Integer> totalDegree,
 						  Map<Integer, Double> v, 
 			              Map<Integer, Double> vOld) {
 		
-		while (subtractMap(v, vOld) > 0.0001) {
+		double subtract = subtractMap(v, vOld);
+		while (subtract > 0.0001) {
 			vOld = v;
 			v = new HashMap<Integer, Double>();
 			
@@ -109,20 +125,21 @@ public class PageRank {
 				
 				v.put(myEntries.getKey(), value);
 			}
+			subtract = subtractMap(v, vOld);
 		}
 		
 		// PRINT VALUES
 		PriorityQueue<Entry<Integer, Double>> pq = new PriorityQueue<Map.Entry<Integer,Double>>(v.size(), new Comparator<Entry<Integer, Double>>() {
 
 		    public int compare(Entry<Integer, Double> arg0,
-		            Entry<Integer, Double> arg1) {
+		            			   Entry<Integer, Double> arg1) {
 		        return arg1.getValue().compareTo(arg0.getValue());
 		    }
 		});
 		
 		pq.addAll(v.entrySet());
 			try {
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("Wiki-PageRank.txt"));
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("Wiki-PageRank-Result.txt"));
 				while (!pq.isEmpty()) {
 					Entry<Integer, Double> entryVal = pq.poll();
 					double val = entryVal.getValue();
@@ -132,10 +149,9 @@ public class PageRank {
 					
 				}
 				out.close();
-				System.out.print("heyyyyy we are done");
+				System.out.print("PageRank Complete");
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
@@ -145,7 +161,6 @@ public class PageRank {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		PageRank myClass = new PageRank();
 		myClass.parseToMatrix("wiki-topcats.txt");
 
